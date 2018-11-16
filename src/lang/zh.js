@@ -1,6 +1,6 @@
 export default {
   route: {
-    dashboard: '首页',
+    dashboard: '管理首页',
     introduction: '简述',
     documentation: '文档',
     guide: '引导页',
@@ -44,6 +44,11 @@ export default {
     complexTable: '综合Table',
     treeTable: '树形表格',
     customTreeTable: '自定义树表',
+    apiControl: 'API管理',
+    apiGroupTable: 'API分组列表',
+    apiTable: 'API列表',
+    applyControl: '应用管理',
+    applyTable: '应用列表',
     tab: 'Tab',
     form: '表单',
     createArticle: '创建文章',
@@ -66,14 +71,14 @@ export default {
   },
   navbar: {
     logOut: '退出登录',
-    dashboard: '首页',
+    dashboard: '管理首页',
     github: '项目地址',
     screenfull: '全屏',
     theme: '换肤',
     size: '布局大小'
   },
   login: {
-    title: '系统登录',
+    title: '欢迎使用融盛渠道网关系统',
     logIn: '登录',
     username: '账号',
     password: '密码',
