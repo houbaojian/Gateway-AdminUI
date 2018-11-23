@@ -88,7 +88,7 @@ export default {
           }
         },
         title: {
-          text: 'API近一月调用趋势',
+          text: 'API近一月健康趋势',
           textStyle: {
             // 文字颜色
             color: '#8b8b8b',
@@ -101,7 +101,7 @@ export default {
             // 字体大小
             fontSize: 18
           },
-          subtext: '次',
+          subtext: '%',
           // 副标题文本样式
           subtextStyle: {
             // 文字颜色

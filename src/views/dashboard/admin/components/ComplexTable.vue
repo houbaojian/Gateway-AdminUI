@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-input :placeholder="$t('table.gatewayName')" v-model="listQuery.gatewayName" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
-      <!--<el-select v-model="listQuery.importance" :placeholder="$t('table.importance')" clearable style="width: 90px" class="filter-item">
+    <!--<div class="filter-container">
+      <el-input :placeholder="$t('table.title')" v-model="listQuery.title" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
+      <el-select v-model="listQuery.importance" :placeholder="$t('table.importance')" clearable style="width: 90px" class="filter-item">
         <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item"/>
       </el-select>
       <el-select v-model="listQuery.type" :placeholder="$t('table.type')" clearable class="filter-item" style="width: 130px">
@@ -10,59 +10,59 @@
       </el-select>
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
-      </el-select>-->
+      </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" style="float: right;" type="primary" icon="el-icon-download" @click="handleDownload">{{ $t('table.export') }}</el-button>
-      <el-button class="filter-item" style="float: right;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.addGateway') }}</el-button>
-      <!--<el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">{{ $t('table.reviewer') }}</el-checkbox>-->
-    </div>
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
+      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">{{ $t('table.export') }}</el-button>
+      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">{{ $t('table.reviewer') }}</el-checkbox>
+    </div>-->
+
+    <span style="color: #8b8b8b; fontStyle:normal; fontWeight:bold; fontFamily:sans-serif; fontSize:18">{{ $t('table.redis') }}</span>
 
     <el-table
       v-loading="listLoading"
       :key="tableKey"
       :data="list"
+      :header-cell-style="tableHeaderColor"
+      height="240"
       border
       fit
       highlight-current-row
       style="width: 100%;"
       @sort-change="sortChange">
-      <el-table-column :label="$t('table.id')" prop="id" sortable="custom" align="center" width="100">
+      <el-table-column :label="$t('table.codeNo')" width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <!--<span>{{ scope.row.codeNo }}</span>-->
+          <span>{{ '1001' }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.gatewayName')" width="300px" align="center">
+      <el-table-column :label="$t('table.status')" class-name="status-col" width="90">
         <template slot-scope="scope">
-          <span>{{ scope.row.gatewayName }}</span>
+          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.apiCount')" width="120px" align="center">
+      <el-table-column :label="$t('table.reloadTime')" width="140px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.apiCount }}</span>
+          <!--<span>{{ scope.row.reloadTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
+          <span>{{ '2018-11-20 14:10' | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.describe')" width="230px" align="center">
+      <el-table-column :label="$t('table.operation')" align="center" width="167" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <span>{{ scope.row.describe }}</span>
+          <el-button size="mini" type="danger" @click="handleModifyStatus(scope.row,$t('table.pause'))">{{ $t('table.close') }}
+          </el-button>
+          <el-button size="mini" type="success" @click="handleModifyStatus(scope.row,$t('table.running'))">{{ $t('table.reload') }}
+          </el-button>
+          <!--<el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
+          <el-button v-if="scope.row.status!='published'" size="mini" type="success" @click="handleModifyStatus(scope.row,'published')">{{ $t('table.publish') }}
+          </el-button>
+          <el-button v-if="scope.row.status!='draft'" size="mini" @click="handleModifyStatus(scope.row,'draft')">{{ $t('table.draft') }}
+          </el-button>
+          <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(scope.row,'deleted')">{{ $t('table.delete') }}
+          </el-button>-->
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.createTime')" width="150px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <!--<el-table-column :label="$t('table.title')" min-width="150px">
-        <template slot-scope="scope">
-          <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.title }}</span>
-          <el-tag>{{ scope.row.type | typeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.author')" width="110px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="showReviewer" :label="$t('table.reviewer')" width="110px" align="center">
+      <!--<el-table-column v-if="showReviewer" :label="$t('table.reviewer')" width="110px" align="center">
         <template slot-scope="scope">
           <span style="color:red;">{{ scope.row.reviewer }}</span>
         </template>
@@ -82,71 +82,30 @@
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
         </template>
-      </el-table-column>-->
+      </el-table-column>
       <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="default" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
-          <el-button type="default" size="mini">{{ $t('table.apiControl') }}</el-button>
-          <el-button type="default" size="mini">{{ $t('table.more') }}</el-button>
-          <!--<el-button v-if="scope.row.status!='published'" size="mini" type="success" @click="handleModifyStatus(scope.row,'published')">{{ $t('table.publish') }}
+          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
+          <el-button v-if="scope.row.status!='published'" size="mini" type="success" @click="handleModifyStatus(scope.row,'published')">{{ $t('table.publish') }}
           </el-button>
           <el-button v-if="scope.row.status!='draft'" size="mini" @click="handleModifyStatus(scope.row,'draft')">{{ $t('table.draft') }}
           </el-button>
           <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(scope.row,'deleted')">{{ $t('table.delete') }}
-          </el-button>-->
+          </el-button>
         </template>
-      </el-table-column>
+      </el-table-column>-->
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <!--<pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />-->
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="110px" style="width: 550px; margin-left:50px;">
-        <el-form-item :label="$t('table.gatewayName')" prop="gatewayName">
-          <el-input v-model="temp.gatewayName"/>
-          <div>
-            <svg-icon icon-class="guide" />
-            <span style="color: #8b8b8b; fontStyle:normal; fontWeight:bold; fontFamily:sans-serif; fontSize:15">{{ $t('table.gatewayNameMessage') }}</span>
-          </div>
-        </el-form-item>
-        <el-form-item :label="$t('table.describe')">
-          <el-input :autosize="{ minRows: 2, maxRows: 4}" v-model="temp.describe" type="textarea" placeholder="请输入"/>
-        </el-form-item>
-        <el-form-item :label="$t('table.serviceSource')" prop="serviceSource">
-          <el-select v-model="temp.serviceSource" class="filter-item" placeholder="请选择后端服务源">
-            <el-option v-for="item in serviceSourceOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+    <!--<el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+        <el-form-item :label="$t('table.type')" prop="type">
+          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
           </el-select>
-          <div>
-            <svg-icon icon-class="guide" />
-            <span style="color: #8b8b8b; fontStyle:normal; fontWeight:bold; fontFamily:sans-serif; fontSize:15">{{ $t('table.serviceSourceMessage') }}</span>
-          </div>
         </el-form-item>
-        <el-form-item :label="$t('table.serviceMode')" prop="serviceMode">
-          <el-select v-model="temp.serviceMode" class="filter-item" placeholder="请选择服务实现方式">
-            <el-option v-for="item in serviceModeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
-          </el-select>
-          <div>
-            <svg-icon icon-class="guide" />
-            <span style="color: #8b8b8b; fontStyle:normal; fontWeight:bold; fontFamily:sans-serif; fontSize:15">{{ $t('table.serviceModeMessage') }}</span>
-          </div>
-        </el-form-item>
-        <el-form-item :label="$t('table.accessAgreement')" prop="accessAgreement">
-          <el-select v-model="temp.accessAgreement" class="filter-item" placeholder="请选择协议">
-            <el-option v-for="item in accessAgreementOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
-          </el-select>
-          <div>
-            <svg-icon icon-class="guide" />
-            <span style="color: #8b8b8b; fontStyle:normal; fontWeight:bold; fontFamily:sans-serif; fontSize:15">{{ $t('table.accessAgreementMessage') }}</span>
-          </div>
-        </el-form-item>
-        <el-form-item :label="$t('table.urlPrefix')" prop="urlPrefix">
-          <el-input v-model="temp.urlPrefix"/>
-          <div>
-            <svg-icon icon-class="guide" />
-            <span style="color: #8b8b8b; fontStyle:normal; fontWeight:bold; fontFamily:sans-serif; fontSize:15">{{ $t('table.urlPrefixMessage') }}</span>
-          </div>
-        </el-form-item>
-        <!--<el-form-item :label="$t('table.date')" prop="timestamp">
+        <el-form-item :label="$t('table.date')" prop="timestamp">
           <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date"/>
         </el-form-item>
         <el-form-item :label="$t('table.title')" prop="title">
@@ -162,15 +121,15 @@
         </el-form-item>
         <el-form-item :label="$t('table.remark')">
           <el-input :autosize="{ minRows: 2, maxRows: 4}" v-model="temp.remark" type="textarea" placeholder="Please input"/>
-        </el-form-item>-->
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">{{ $t('table.confirm') }}</el-button>
       </div>
-    </el-dialog>
+    </el-dialog>-->
 
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
+    <!--<el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
       <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
         <el-table-column prop="key" label="Channel"/>
         <el-table-column prop="pv" label="Pv"/>
@@ -178,7 +137,7 @@
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
       </span>
-    </el-dialog>
+    </el-dialog>-->
 
   </div>
 </template>
@@ -187,37 +146,17 @@
 import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // Waves directive
 import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination'
+import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
-const serviceSourceOptions = [
-  { key: 'proxy', display_name: '代理' },
-  { key: 'instance', display_name: '实例' }
+const calendarTypeOptions = [
+  { key: 'CN', display_name: 'China' },
+  { key: 'US', display_name: 'USA' },
+  { key: 'JP', display_name: 'Japan' },
+  { key: 'EU', display_name: 'Eurozone' }
 ]
 
-const serviceModeOptions = [
-  { key: 'restful', display_name: 'Restful' },
-  { key: 'webservice', display_name: 'WebService' }
-]
-
-const accessAgreementOptions = [
-  { key: 'http', display_name: 'HTTP' },
-  { key: 'https', display_name: 'HTTPS' }
-]
-
-// arr to obj ,such as { proxy : "代理", instance : "实例" }
-const serviceSourceKeyValue = serviceSourceOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
-
-// arr to obj ,such as { restful : "Restful", webservice : "WebService" }
-const serviceModeKeyValue = serviceModeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
-
-// arr to obj ,such as { http : "HTTP", https : "HTTPS" }
-const accessAgreementKeyValue = accessAgreementOptions.reduce((acc, cur) => {
+// arr to obj ,such as { CN : "China", US : "USA" }
+const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
   return acc
 }, {})
@@ -235,14 +174,8 @@ export default {
       }
       return statusMap[status]
     },
-    serviceSourceFilter(type) {
-      return serviceSourceKeyValue[type]
-    },
-    serviceModeFilter(type) {
-      return serviceModeKeyValue[type]
-    },
-    accessAgreementFilter(type) {
-      return accessAgreementKeyValue[type]
+    typeFilter(type) {
+      return calendarTypeKeyValue[type]
     }
   },
   data() {
@@ -260,20 +193,12 @@ export default {
         sort: '+id'
       },
       importanceOptions: [1, 2, 3],
-      serviceSourceOptions,
-      serviceModeOptions,
-      accessAgreementOptions,
+      calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
       temp: {
         id: undefined,
-        gatewayName: '',
-        describe: '',
-        serviceSource: '',
-        serviceMode: '',
-        accessAgreement: '',
-        urlPrefix: '',
         importance: 1,
         remark: '',
         timestamp: new Date(),
@@ -284,19 +209,15 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑渠道',
-        create: '新建渠道'
+        update: 'Edit',
+        create: 'Create'
       },
       dialogPvVisible: false,
       pvData: [],
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }],
-        gatewayName: [{ required: true, message: '渠道名称不可以为空!', trigger: 'blur' }],
-        serviceSource: [{ required: true, message: '后端服务源不可以为空!', trigger: 'blur' }],
-        serviceMode: [{ required: true, message: '服务实现方式不可以为空!', trigger: 'blur' }],
-        accessAgreement: [{ required: true, message: '访问协议不可以为空!', trigger: 'blur' }]
+        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
       downloadLoading: false
     }
@@ -316,6 +237,16 @@ export default {
           this.listLoading = false
         }, 1.5 * 1000)
       })
+    },
+    // 修改table tr行的背景色
+    tableRowStyle({ row, rowIndex }) {
+      return 'background-color: #F7F6Fd'
+    },
+    // 修改table header的背景色
+    tableHeaderColor({ row, column, rowIndex, columnIndex }) {
+      if (rowIndex === 0) {
+        return 'background-color: #F7F6Fd;color: #2d2f33;font-weight: 500;'
+      }
     },
     handleFilter() {
       this.listQuery.page = 1
